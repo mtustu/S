@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">test1</string>
+    <string name="submit">Submit</string>
+    <string name="enter_titel"> Enter Titel</string>
+    <string name="enter_description"> Enter Description</string>
+    <string name="enter_title">Enter Title</string>
+    <string name="title_activity_menu">Menu</string>
+    <string name="todo">TODO</string>
+    <string name="new_post">New Post</string>
+    <string name="logout">Logout</string>
+</resources>

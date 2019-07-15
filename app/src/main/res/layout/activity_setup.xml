@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="mkw.ceit.edu.s.SetupActivity">
+
+    <ImageButton
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginLeft="90dp"
+        android:onClick="profileImgClick"
+
+        android:id="@+id/setUpImgBtn"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/displayName"
+        android:hint="UserName"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        android:onClick="doneBtnClick"/>
+</LinearLayout>
