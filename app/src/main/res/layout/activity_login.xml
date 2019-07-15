@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="loginButtonClicked"
-        android:text="Login to app"
+        android:text="Login"
         />
     <Button
         android:layout_width="match_parent"
