@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,12 +26,18 @@ public class Login extends AppCompatActivity {
     private EditText loginPass;
     private FirebaseAuth mAuth;
     private DatabaseReference mdatabase;
+    private ProgressBar simplePorgressbar;
+    private TextView loadingText;
+    private TextView loadingText1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginEmail = (EditText) findViewById(R.id.loginEmail);
         loginPass = (EditText) findViewById(R.id.loginPass);
+        simplePorgressbar = (ProgressBar) findViewById(R.id.simpleProgressBar);
+        loadingText =(TextView) findViewById(R.id.loadingText);
+        loadingText1 =(TextView) findViewById(R.id.loadingText1);
 
         mAuth = FirebaseAuth.getInstance();
         mdatabase = FirebaseDatabase.getInstance().getReference().child("Users");
@@ -51,6 +59,9 @@ public class Login extends AppCompatActivity {
             });
         }
 
+        simplePorgressbar.setVisibility(view.VISIBLE);
+        loadingText.setVisibility(view.VISIBLE);
+        loadingText1.setVisibility(view.VISIBLE);
     }
     public void checkUserExists()
     {
