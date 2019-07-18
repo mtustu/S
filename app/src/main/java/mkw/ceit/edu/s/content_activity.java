@@ -50,7 +50,6 @@ public class content_activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         t1=(EditText) findViewById(R.id.editText);
-        t2=(EditText) findViewById(R.id.editText2);
         mAuth = FirebaseAuth.getInstance();
         mCurrentUser = mAuth.getCurrentUser();
         storageReference = FirebaseStorage.getInstance().getReference();
@@ -80,9 +79,8 @@ public class content_activity extends AppCompatActivity {
 
     public void OnClick(View view) {
         final String tValue = t1.getText().toString().trim();
-        final String dtitle = t2.getText().toString().trim();
 
-        if(!TextUtils.isEmpty(tValue) && !TextUtils.isEmpty(dtitle))
+        if(!TextUtils.isEmpty(tValue))
         {
 
             final StorageReference ref = storageReference.child("Post Image").child(Objects.requireNonNull(uri.getLastPathSegment()));
@@ -112,7 +110,6 @@ public class content_activity extends AppCompatActivity {
                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                                newPost.child("title").setValue(tValue);
-                               newPost.child("desc").setValue(dtitle);
                                newPost.child("image").setValue(downloadURL.toString());
                                newPost.child("uid").setValue(mCurrentUser.getUid());
 

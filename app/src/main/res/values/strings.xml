@@ -8,4 +8,9 @@
     <string name="todo">TODO</string>
     <string name="new_post">New Post</string>
     <string name="logout">Logout</string>
+    <string name="title_activity_content">Content</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_content_act">Content_act</string>
 </resources>

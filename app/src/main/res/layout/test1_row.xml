@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="20dp"
+    android:layout_marginTop="20dp"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
+
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
+        android:layout_marginTop="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="10dp">
+        >
 
         <ImageView
+            android:layout_marginTop="7dp"
             android:id="@+id/postProfileimg"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center"
             android:contentDescription="TODO"
            />
@@ -25,28 +28,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Username" />
+            android:text="Username"
+            android:textAlignment="center"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            />
 
         <ImageView
             android:id="@+id/postimage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:contentDescription="TODO" />
+            android:layout_height="wrap_content"
+            android:contentDescription="TODO"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"/>
 
         <TextView
             android:id="@+id/textTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Post Title" />
+            android:layout_margin="15dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="18dp"
+            android:text="What's your photo is about?" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Post Description"
-            android:layout_margin="5dp"
-            android:id="@+id/textDesc"
-            />
 
     </LinearLayout>
 
