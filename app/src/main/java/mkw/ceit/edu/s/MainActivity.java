@@ -2,6 +2,11 @@ package mkw.ceit.edu.s;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import mkw.ceit.edu.s.R;
 
@@ -36,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_content_main);
+        setContentView(R.layout.activity_content_act);
 
         test1 = (RecyclerView) findViewById(R.id.list_re);
         test1.setHasFixedSize(true);
@@ -47,16 +53,14 @@ public class MainActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(firebaseAuth.getCurrentUser()==null)
-                {
-                    Intent loginIntent = new Intent(MainActivity.this,Login.class);
+                if (firebaseAuth.getCurrentUser() == null) {
+                    Intent loginIntent = new Intent(MainActivity.this, Login.class);
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(loginIntent);
                     finish();
                 }
             }
         };
-
 
 
     }
@@ -70,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu,menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
 
 
@@ -79,21 +83,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.addOp)
-        {
-            Intent intent = new Intent(MainActivity.this,content_activity.class);
+        if (id == R.id.addOp) {
+            Intent intent = new Intent(MainActivity.this, content_activity.class);
             startActivity(intent);
 
-        }
-        else if(id == R.id.logout)
-        {
+        } else if (id == R.id.logout) {
             mAuth.signOut();
         }
 
 
         return super.onOptionsItemSelected(item);
     }
-
 
 
     @Override
@@ -106,11 +106,11 @@ public class MainActivity extends AppCompatActivity {
                 new FirebaseRecyclerOptions.Builder<testclass>()
                         .setQuery(mdatabase, testclass.class)
                         .build();
-        FirebaseRecyclerAdapter<testclass,testViewHolder> FRA= new FirebaseRecyclerAdapter<testclass, testViewHolder>(options) {
+        FirebaseRecyclerAdapter<testclass, testViewHolder> FRA = new FirebaseRecyclerAdapter<testclass, testViewHolder>(options) {
             @NonNull
             @Override
             public testViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.test1_row,parent,false);
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.test1_row, parent, false);
                 return new testViewHolder(view);
             }
 
@@ -118,17 +118,16 @@ public class MainActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull testViewHolder viewHolder, int position, @NonNull testclass model) {
                 final String post_key = getRef(position).getKey().toString();
                 viewHolder.setTitle(model.getTitle());
-                viewHolder.setDesc(model.getDesc());
 
-                viewHolder.setPImage(getApplicationContext(),model.getProfileImage());
+                viewHolder.setPImage(getApplicationContext(), model.getProfileImage());
                 viewHolder.setImage(getApplicationContext(), model.getImage());
                 viewHolder.setUsername(model.getUsername());
 
                 viewHolder.mview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(MainActivity.this,SimpleSingletest.class);
-                        intent.putExtra("Post id",post_key);
+                        Intent intent = new Intent(MainActivity.this, SimpleSingletest.class);
+                        intent.putExtra("Post id", post_key);
                         startActivity(intent);
                     }
                 });
@@ -140,48 +139,98 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static class testViewHolder extends RecyclerView.ViewHolder{
+    public static class testViewHolder extends RecyclerView.ViewHolder {
 
 
         View mview;
-        testViewHolder(View itemView)
-        {
+
+        testViewHolder(View itemView) {
             super(itemView);
-            mview =itemView;
+            mview = itemView;
         }
-        public void setTitle(String title)
-        {
+
+        public void setTitle(String title) {
             TextView post_title = mview.findViewById(R.id.textTitle);
             post_title.setText(title);
         }
-        public void setDesc(String Desc)
-        {
-            TextView post_desc = mview.findViewById(R.id.textDesc);
-            post_desc.setText(Desc);
-        }
-        public void setImage(Context ctx, String image)
-        {
+
+
+        public void setImage(Context ctx, String image) {
             ImageView post_imageA = (ImageView) mview.findViewById(R.id.postimage);
             Picasso.get().load(image).into(post_imageA);
 
         }
-        public  void setUsername(String userName)
-        {
+
+        public void setUsername(String userName) {
             TextView username = mview.findViewById(R.id.username);
             username.setText(userName);
         }
-        public void setPImage(Context ctx, String profileImage)
-        {
+
+        public void setPImage(Context ctx, String profileImage) {
             ImageView profile_img = (ImageView) mview.findViewById(R.id.postProfileimg);
-            Picasso.get().load(profileImage).into(profile_img);
+            Picasso.get().load(profileImage).transform(new CircleTransform()).into(profile_img);
 
         }
-
-
 
 
     }
 
+}
+
+class CircleTransform implements Transformation {
+
+    boolean mCircleSeparator = false;
+
+    public CircleTransform() {
+    }
+
+    public CircleTransform(boolean circleSeparator) {
+        mCircleSeparator = circleSeparator;
+    }
+
+    @Override
+    public Bitmap transform(Bitmap source) {
+        int size = Math.min(source.getWidth(), source.getHeight());
+        int x = (source.getWidth() - size) / 2;
+        int y = (source.getHeight() - size) / 2;
+        Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+        if (squaredBitmap != source) {
+            source.recycle();
+        }
+        Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
+        Canvas canvas = new Canvas(bitmap);
+        BitmapShader shader = new BitmapShader(squaredBitmap, BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
+        paint.setShader(shader);
+        float r = size / 2f;
+        canvas.drawCircle(r, r, r - 1, paint);
+        // Make the thin border:
+        Paint paintBorder = new Paint();
+        paintBorder.setStyle(Paint.Style.STROKE);
+        paintBorder.setColor(Color.argb(84,0,0,0));
+        paintBorder.setAntiAlias(true);
+        paintBorder.setStrokeWidth(1);
+        canvas.drawCircle(r, r, r-1, paintBorder);
+
+        // Optional separator for stacking:
+        if (mCircleSeparator) {
+            Paint paintBorderSeparator = new Paint();
+            paintBorderSeparator.setStyle(Paint.Style.STROKE);
+            paintBorderSeparator.setColor(Color.parseColor("#ffffff"));
+            paintBorderSeparator.setAntiAlias(true);
+            paintBorderSeparator.setStrokeWidth(4);
+            canvas.drawCircle(r, r, r+1, paintBorderSeparator);
+        }
+        squaredBitmap.recycle();
+        return bitmap;
+    }
+
+
+    @Override
+    public String key() {
+        return "circle";
+    }
+}
 
 
  /*   ImageButton imgbtn;
@@ -289,4 +338,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this,content_activity.class);
         startActivity(intent);
     }*/
-}
+

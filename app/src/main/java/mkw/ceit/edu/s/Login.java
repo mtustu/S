@@ -1,10 +1,15 @@
 package mkw.ceit.edu.s;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,18 +29,29 @@ public class Login extends AppCompatActivity {
     private EditText loginPass;
     private FirebaseAuth mAuth;
     private DatabaseReference mdatabase;
+    private LinearLayout layout1;
+    private LinearLayout layout2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginEmail = (EditText) findViewById(R.id.loginEmail);
         loginPass = (EditText) findViewById(R.id.loginPass);
+        layout1 = (LinearLayout) findViewById(R.id.contentLayout);
+        layout2 = (LinearLayout) findViewById(R.id.loadingLayout);
 
         mAuth = FirebaseAuth.getInstance();
         mdatabase = FirebaseDatabase.getInstance().getReference().child("Users");
     }
 
     public void loginButtonClicked(View view) {
+        View v = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
+
         String email = loginEmail.getText().toString().trim();
         String pass = loginPass.getText().toString().trim();
         if(!TextUtils.isEmpty(email)&&!TextUtils.isEmpty(pass))
@@ -50,6 +66,10 @@ public class Login extends AppCompatActivity {
                 }
             });
         }
+        layout1.setVisibility(View.INVISIBLE);
+        layout2.setVisibility(View.VISIBLE);
+
+
 
     }
     public void checkUserExists()
