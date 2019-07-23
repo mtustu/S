@@ -3,17 +3,21 @@ package mkw.ceit.edu.s;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,7 +33,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
-import mkw.ceit.edu.s.R;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView test1;
@@ -37,14 +46,17 @@ public class MainActivity extends AppCompatActivity {
     private Context mctx;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    FirebaseRecyclerAdapter<testclass, testViewHolder> FRA;
+    Parcelable recylerViewState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_content_act);
 
         test1 = (RecyclerView) findViewById(R.id.list_re);
+        test1.setItemViewCacheSize(20);
         test1.setHasFixedSize(true);
         test1.setLayoutManager(new LinearLayoutManager(this));
         mdatabase = FirebaseDatabase.getInstance().getReference().child("test1");
@@ -61,11 +73,53 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        FirebaseRecyclerOptions<testclass> options =
+                new FirebaseRecyclerOptions.Builder<testclass>()
+                        .setQuery(mdatabase, testclass.class)
+                        .build();
+        FRA = new FirebaseRecyclerAdapter<testclass, testViewHolder>(options) {
+            @NonNull
+            @Override
+            public testViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.test1_row, parent, false);
+                return new testViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull testViewHolder viewHolder, int position, @NonNull testclass model) {
+                final String post_key = getRef(position).getKey().toString();
+                viewHolder.setTitle(model.getTitle());
+
+                viewHolder.setPImage(getApplicationContext(), model.getProfileImage());
+                viewHolder.setImage(viewHolder, model.getImage());
+                viewHolder.setUsername(model.getUsername());
+
+                viewHolder.mview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(MainActivity.this, SimpleSingletest.class);
+                        intent.putExtra("Post id", post_key);
+                        startActivity(intent);
+                    }
+                });
+            }
+        };
+
 
 
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        recylerViewState = test1.getLayoutManager().onSaveInstanceState();   }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        test1.getLayoutManager().onRestoreInstanceState(recylerViewState);
+    }
     public void onBackPressed() {
         finish();
         // System.exit(0);
@@ -95,51 +149,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     protected void onStart() {
-
-        super.onStart();
-
         mAuth.addAuthStateListener(mAuthListener);
-        FirebaseRecyclerOptions<testclass> options =
-                new FirebaseRecyclerOptions.Builder<testclass>()
-                        .setQuery(mdatabase, testclass.class)
-                        .build();
-        FirebaseRecyclerAdapter<testclass, testViewHolder> FRA = new FirebaseRecyclerAdapter<testclass, testViewHolder>(options) {
-            @NonNull
-            @Override
-            public testViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.test1_row, parent, false);
-                return new testViewHolder(view);
-            }
-
-            @Override
-            protected void onBindViewHolder(@NonNull testViewHolder viewHolder, int position, @NonNull testclass model) {
-                final String post_key = getRef(position).getKey().toString();
-                viewHolder.setTitle(model.getTitle());
-
-                viewHolder.setPImage(getApplicationContext(), model.getProfileImage());
-                viewHolder.setImage(getApplicationContext(), model.getImage());
-                viewHolder.setUsername(model.getUsername());
-
-                viewHolder.mview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(MainActivity.this, SimpleSingletest.class);
-                        intent.putExtra("Post id", post_key);
-                        startActivity(intent);
-                    }
-                });
-            }
-        };
+        super.onStart();
         FRA.startListening();
         test1.setAdapter(FRA);
-
-
     }
 
-    public static class testViewHolder extends RecyclerView.ViewHolder {
+
+    public class testViewHolder extends RecyclerView.ViewHolder {
 
 
         View mview;
@@ -155,11 +174,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        public void setImage(Context ctx, String image) {
-            ImageView post_imageA = (ImageView) mview.findViewById(R.id.postimage);
+        public void setImage(RecyclerView.ViewHolder holder, final String image) {
+            ImageView post_imageA =(ImageView) mview.findViewById(R.id.postimage);
             Picasso.get().load(image).into(post_imageA);
-
         }
+
+
 
         public void setUsername(String userName) {
             TextView username = mview.findViewById(R.id.username);
@@ -229,8 +249,8 @@ class CircleTransform implements Transformation {
     @Override
     public String key() {
         return "circle";
-    }
-}
+    }}
+
 
 
  /*   ImageButton imgbtn;
@@ -338,4 +358,3 @@ class CircleTransform implements Transformation {
         Intent intent = new Intent(MainActivity.this,content_activity.class);
         startActivity(intent);
     }*/
-
